@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Procurement Queue | Organization Hub{% endblock %}
+{% block header_title %}Active Procurement Queue{% endblock %}
+{% block header_desc %}Direct oversight of pending organ requests and biological matching operations{% endblock %}
+
+{% block content %}
+<div class="glass-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Managed Request Records</h4>
+        <a href="/organization" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Back to Hub</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table registry-table align-middle">
+            <thead>
+                <tr class="text-muted small fw-bold text-uppercase">
+                    <th class="ps-4">Req ID</th>
+                    <th>Patient Identifier</th>
+                    <th>Required Resource</th>
+                    <th>Urgency Protocol</th>
+                    <th class="text-center">Matching Operations</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in data %}
+                <tr>
+                    <td class="ps-4">
+                        <code class="technical-id">{{ r[0] }}</code>
+                    </td>
+                    <td>
+                        <div class="fw-bold text-dark">Recipient #{{ r[1] }}</div>
+                        <div class="text-muted smaller">Hospitalized Patient</div>
+                    </td>
+                    <td>
+                        <div class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2">
+                            Organ Code: {{ r[2] }}
+                        </div>
+                    </td>
+                    <td>
+                        {% if r[3] == 'High' %}
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-2">
+                                <i class="fa-solid fa-bolt me-1"></i> CRITICAL
+                            </span>
+                        {% elif r[3] == 'Medium' %}
+                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-2">
+                                <i class="fa-solid fa-circle-exclamation me-1"></i> ELEVATED
+                            </span>
+                        {% else %}
+                            <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-3 py-2">
+                                <i class="fa-solid fa-clock me-1"></i> STANDARD
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center pe-4">
+                        <a href="/match/{{ r[0] }}" class="btn btn-gov btn-sm px-4 shadow-sm">
+                            <i class="fa-solid fa-dna me-2"></i> Find Best Match
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if not data %}
+    <div class="text-center py-5 opacity-50">
+        <i class="fa-solid fa-clipboard-check fs-1 mb-3 text-muted"></i>
+        <h5>Queue Empty</h5>
+        <p>No active procurement requests are currently under management.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .text-accent-blue { color: var(--accent-blue); }
+    .bg-primary-subtle { background: rgba(37, 99, 235, 0.1) !important; }
+    .bg-danger-subtle { background: rgba(239, 68, 68, 0.1) !important; }
+    .bg-warning-subtle { background: rgba(234, 179, 8, 0.1) !important; }
+    .bg-info-subtle { background: rgba(14, 165, 233, 0.1) !important; }
+    .smaller { font-size: 0.75rem; }
+    .registry-table tr:hover { background: rgba(0, 0, 0, 0.02); }
+</style>
+{% endblock %}

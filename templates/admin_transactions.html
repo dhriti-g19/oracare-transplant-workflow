@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Transaction Ledger | Administration{% endblock %}
+{% block header_title %}Transplant History{% endblock %}
+{% block header_desc %}Finalized records of successful organ transplantations and matched biological pairs{% endblock %}
+
+{% block content %}
+<div class="glass-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">National Transplant Ledger</h4>
+        <a href="/admin" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table registry-table align-middle">
+            <thead>
+                <tr class="text-muted small fw-bold text-uppercase">
+                    <th class="ps-4">Transaction ID</th>
+                    <th>Patient ID</th>
+                    <th>Donor ID</th>
+                    <th>Organ</th>
+                    <th>Execution Date</th>
+                    <th class="text-center">Outcome</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr>
+                    <td class="ps-4">
+                        <code class="technical-id">{{ row[0] }}</code>
+                    </td>
+                    <td>
+                        <div class="fw-bold text-dark">{{ row[1] }}</div>
+                        <div class="text-muted smaller">Recipient</div>
+                    </td>
+                    <td>
+                        <div class="fw-bold text-dark">{{ row[2] }}</div>
+                        <div class="text-muted smaller">Contributor</div>
+                    </td>
+                    <td>
+                        <div class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                            {{ row[4] }}
+                        </div>
+                    </td>
+                    <td class="text-muted">
+                        {{ row[5].strftime('%Y-%m-%d') if row[5] and not row[5] is string else row[5] or 'PENDING' }}
+                    </td>
+                    <td class="text-center pe-4">
+                        {% set status = row[6]|upper %}
+                        {% if status in ['SUCCESSFUL', 'SUCCESS', 'COMPLETED', 'AUTHORIZED'] %}
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2">
+                                <i class="fa-solid fa-check-double me-1"></i> AUTHORIZED
+                            </span>
+                        {% elif status == 'AWAITING_AUTH' and session.get('role') == 'admin' %}
+                            <a href="{{ url_for('authorize_transplant', req_id=row[7], donor_id=row[2], patient_id=row[1], organ_id=row[3]) }}" 
+                               class="btn btn-sm btn-success rounded-pill px-3">
+                                <i class="fa-solid fa-file-signature me-1"></i> Authorize Now
+                            </a>
+                        {% else %}
+                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-3 py-2">
+                                <i class="fa-solid fa-clock me-1"></i> {{ status }}
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if not data %}
+    <div class="text-center py-5 opacity-50">
+        <i class="fa-solid fa-receipt fs-1 mb-3 text-muted"></i>
+        <h5>No Transaction History</h5>
+        <p>No completed transplants found in the ledger.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .text-accent-blue { color: var(--accent-blue); }
+    .bg-primary-subtle { background: rgba(56, 189, 248, 0.1) !important; }
+    .bg-success-subtle { background: rgba(34, 197, 94, 0.1) !important; }
+    .bg-warning-subtle { background: rgba(234, 179, 8, 0.1) !important; }
+    .smaller { font-size: 0.75rem; }
+    .registry-table tr:hover { background: rgba(255, 255, 255, 0.05); }
+    .technical-id { color: #e83e8c; font-size: 0.85rem; }
+</style>
+{% endblock %}

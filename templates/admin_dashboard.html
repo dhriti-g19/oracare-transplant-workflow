@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}National Registry | Government Administration{% endblock %}
+{% block header_title %}System Overview{% endblock %}
+{% block header_desc %}Monitoring national organ procurement and transplantation metrics{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-5">
+    <!-- Stat Cards -->
+    <div class="col-md-3">
+        <div class="glass-card p-4 border-start border-primary border-4">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted small fw-bold text-uppercase">Total Donors</span>
+                <i class="fa-solid fa-users text-primary"></i>
+            </div>
+            <h2 class="fw-bold mb-0">{{ donors }}</h2>
+            <div class="text-success small mt-2"><i class="fa-solid fa-arrow-up me-1"></i> Registry Active</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card p-4 border-start border-success border-4">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted small fw-bold text-uppercase">Waitlist Patients</span>
+                <i class="fa-solid fa-hospital-user text-success"></i>
+            </div>
+            <h2 class="fw-bold mb-0">{{ patients }}</h2>
+            <div class="text-muted small mt-2">Verified Profiles</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card p-4 border-start border-info border-4">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted small fw-bold text-uppercase">Organizations</span>
+                <i class="fa-solid fa-building-shield text-info"></i>
+            </div>
+            <h2 class="fw-bold mb-0">{{ orgs }}</h2>
+            <div class="text-muted small mt-2">Active Entities</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-card p-4 border-start border-warning border-4">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted small fw-bold text-uppercase">Transplants</span>
+                <i class="fa-solid fa-handshake-angle text-warning"></i>
+            </div>
+            <h2 class="fw-bold mb-0">{{ trans }}</h2>
+            <div class="text-success small mt-2">Successful</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Analytics Column -->
+    <div class="col-lg-8">
+        <div class="glass-card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold mb-0">Organ Availability</h4>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2">
+                    By Organ Type
+                </span>
+            </div>
+            <div style="height: 350px;">
+                <canvas id="organChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions Column -->
+    <div class="col-lg-4">
+        <div class="glass-card p-4 h-100">
+            <h4 class="fw-bold mb-4">Registry Operations</h4>
+            <div class="d-grid gap-3">
+                <a href="/admin_requests" class="action-card p-3 text-decoration-none">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="action-icon bg-primary-subtle text-primary">
+                            <i class="fa-solid fa-file-medical"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold text-white">Review Requests</div>
+                            <div class="text-muted small">Manage procurement queue</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right ms-auto text-muted"></i>
+                    </div>
+                </a>
+
+                <a href="/admin_donations" class="action-card p-3 text-decoration-none">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="action-icon bg-success-subtle text-success">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold text-white">Registry Donors</div>
+                            <div class="text-muted small">Audit donation records</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right ms-auto text-muted"></i>
+                    </div>
+                </a>
+
+                <a href="/admin_transactions" class="action-card p-3 text-decoration-none">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="action-icon bg-warning-subtle text-warning">
+                            <i class="fa-solid fa-check-double"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold text-white">Transplant Logs</div>
+                            <div class="text-muted small">Successful operation history</div>
+                        </div>
+                        
+                        {% if pending_count and pending_count > 0 %}
+                        <span class="badge rounded-pill bg-danger ms-auto animate-pulse" style="font-size: 0.7rem;">
+                            {{ pending_count }} PENDING
+                        </span>
+                        {% else %}
+                        <i class="fa-solid fa-chevron-right ms-auto text-muted"></i>
+                        {% endif %}
+                        </div>
+                </a>
+
+                <a href="/logs" class="action-card p-3 text-decoration-none border-danger">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="action-icon bg-danger-subtle text-danger">
+                            <i class="fa-solid fa-bug-slash"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold text-danger">Audit Trail</div>
+                            <div class="text-muted small">Real-time system security logs</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right ms-auto text-muted"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .action-card {
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 12px;
+        transition: all 0.2s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .action-card:hover {
+        background: rgba(37, 99, 235, 0.02);
+        border-color: var(--accent-blue);
+        transform: translateX(4px);
+    }
+    .action-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+    .bg-primary-subtle { background: rgba(37, 99, 235, 0.1) !important; }
+    .bg-success-subtle { background: rgba(34, 197, 94, 0.1) !important; }
+    .bg-warning-subtle { background: rgba(234, 179, 8, 0.1) !important; }
+    .bg-danger-subtle { background: rgba(239, 68, 68, 0.1) !important; }
+    
+    /* Text color overrides for light mode */
+    .action-card .fw-bold { color: var(--text-main) !important; }
+</style>
+
+<!-- Data for Chart.js (passed safely to avoid IDE linter errors) -->
+<script id="chart-labels" type="application/json">{{ labels|tojson|safe }}</script>
+<script id="chart-values" type="application/json">{{ values|tojson|safe }}</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const canvas = document.getElementById('organChart');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        
+        // Retrieve data from JSON script tags
+        const graphLabels = JSON.parse(document.getElementById('chart-labels').textContent);
+        const graphValues = JSON.parse(document.getElementById('chart-values').textContent);
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: graphLabels,
+                datasets: [{
+                    label: 'Available Organs',
+                    data: graphValues,
+                    backgroundColor: 'rgba(37, 99, 235, 0.6)',
+                    borderColor: '#2563eb',
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                        ticks: { color: '#64748b', stepSize: 1 }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#64748b' }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

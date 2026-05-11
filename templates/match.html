@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Biological Matching | National Network{% endblock %}
+{% block header_title %}Matching Results{% endblock %}
+{% block header_desc %}Cross-referencing biological markers for Patient #{{ patient_id }} regarding Organ ID: {{ organ_id }}{% endblock %}
+
+{% block content %}
+<div class="glass-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0 text-primary"><i class="fa-solid fa-dna me-2"></i> Compatible Registry Matches</h4>
+        <a href="/requests" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Back to Queue</a>
+    </div>
+
+    <form method="POST" action="/confirm_match">
+        <input type="hidden" name="patient_id" value="{{ patient_id }}">
+        <input type="hidden" name="organ_id" value="{{ organ_id }}">
+        <input type="hidden" name="request_id" value="{{ request_id }}">
+
+        <div class="table-responsive">
+            <table class="table registry-table align-middle">
+                <thead>
+                    <tr class="text-muted small fw-bold text-uppercase">
+                        <th class="ps-4" style="width: 80px;">Select</th>
+                        <th>Donor Identifier</th>
+                        <th>Biological Metadata</th>
+                        <th class="text-center">Compatibility Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in donors %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="form-check">
+                                <input class="form-check-input custom-radio" type="radio" name="donor_id" value="{{ d[0] }}" id="donor_{{ d[0] }}" required>
+                            </div>
+                        </td>
+                        <td>
+                            <label class="fw-bold text-dark d-block" for="donor_{{ d[0] }}">
+                                <code class="technical-id">#{{ d[0] }}</code> Registry Profile
+                            </label>
+                            <span class="text-muted smaller">Verified Identity</span>
+                        </td>
+                        <td>
+                            <div class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2">
+                                <i class="fa-solid fa-user-check me-1"></i> {{ d[1] }}
+                            </div>
+                        </td>
+                        <td class="text-center pe-4">
+                            <span class="text-success fw-bold smaller">
+                                <i class="fa-solid fa-check-circle me-1"></i> OPTIMAL MATCH
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if donors %}
+            <div class="mt-5 p-4 bg-primary bg-opacity-10 rounded-4 border border-primary border-opacity-25">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <i class="fa-solid fa-circle-info text-primary fs-4"></i>
+                    <p class="mb-0 text-muted small">By confirming, you authorize the formal biological match and initiate the transplantation transaction protocol in the national registry.</p>
+                </div>
+                <button class="btn btn-gov w-100 p-3 shadow-lg">
+                    Initialize Transplantation Transaction <i class="fa-solid fa-right-long ms-2"></i>
+                </button>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <div class="role-icon mx-auto mb-4 border-warning text-warning opacity-75">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+                </div>
+                <h4 class="fw-bold">No Biological Matches Found</h4>
+                <p class="text-muted text-wrap mx-auto" style="max-width: 500px;">
+                    Our algorithms could not find a compatible donor with matching blood groups and organ specifications for this specific request.
+                </p>
+                <a href="/requests" class="btn btn-outline-secondary mt-3">Return to Procurement Queue</a>
+            </div>
+        {% endif %}
+    </form>
+</div>
+
+<style>
+    .bg-primary-subtle { background: rgba(37, 99, 235, 0.1) !important; }
+    .smaller { font-size: 0.85rem; }
+    .custom-radio {
+        width: 1.5rem;
+        height: 1.5rem;
+        background-color: #ffffff;
+        border: 2px solid #cbd5e1;
+        cursor: pointer;
+    }
+    .custom-radio:checked {
+        background-color: var(--accent-blue);
+        border-color: var(--accent-blue);
+    }
+    .registry-table tr:hover { background: rgba(0, 0, 0, 0.02); }
+</style>
+{% endblock %}

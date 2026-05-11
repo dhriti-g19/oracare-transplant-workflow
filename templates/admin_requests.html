@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Registry Queue | Administration{% endblock %}
+{% block header_title %}Pending Procurement Requests{% endblock %}
+{% block header_desc %}Verify and manage active organ procurement petitions from affiliated hospitals{% endblock %}
+
+{% block content %}
+<div class="glass-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Active Registry Queue</h4>
+        <a href="/admin" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table registry-table align-middle">
+            <thead>
+                <tr class="text-muted small fw-bold text-uppercase">
+                    <th class="ps-4">Request ID</th>
+                    <th>Patient Identification</th>
+                    <th>Organ Type</th>
+                    <th>Filing Date</th>
+                    <th>Urgency Protocol</th>
+                    <th class="text-center">Registry Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr>
+                    <td class="ps-4">
+                        <code class="technical-id">{{ row[0] }}</code>
+                    </td>
+                    <td>
+                        <div class="fw-bold text-dark">{{ row[1] }}</div>
+                        <div class="text-muted smaller">Verified Identity</div>
+                    </td>
+                    <td>
+                        <div class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                            {{ row[2] }}
+                        </div>
+                    </td>
+                    <td class="text-muted">
+                        {{ row[3].strftime('%Y-%m-%d') if row[3] else 'PENDING' }}
+                    </td>
+                    <td>
+                        {% if row[4] == 'High' %}
+                            <span class="badge bg-danger text-white rounded-pill px-3 py-2 border border-danger">
+                                <i class="fa-solid fa-triangle-exclamation me-1"></i> EMERGENCY
+                            </span>
+                        {% elif row[4] == 'Medium' %}
+                            <span class="badge bg-warning text-dark rounded-pill px-3 py-2">
+                                <i class="fa-solid fa-circle-exclamation me-1"></i> MODERATE
+                            </span>
+                        {% else %}
+                            <span class="badge bg-info text-dark rounded-pill px-3 py-2">
+                                <i class="fa-solid fa-circle-info me-1"></i> ROUTINE
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center pe-4">
+                        <a href="/delete_request/{{ row[0] }}" 
+                           class="btn btn-sm btn-outline-danger" 
+                           onclick="return confirm('CRITICAL: Remove this request from the national registry?')">
+                           <i class="fa-solid fa-trash-can"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if not data %}
+    <div class="text-center py-5 opacity-50">
+        <i class="fa-solid fa-folder-open fs-1 mb-3 text-muted"></i>
+        <h5>No Pending Requests</h5>
+        <p>Registry queue is currently clear.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .text-accent-blue { color: var(--accent-blue); }
+    .bg-primary-subtle { background: rgba(56, 189, 248, 0.1) !important; }
+    .smaller { font-size: 0.75rem; }
+    .registry-table tr:hover { background: rgba(255, 255, 255, 0.05); }
+</style>
+{% endblock %}

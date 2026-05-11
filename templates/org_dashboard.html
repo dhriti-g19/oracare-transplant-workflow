@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+
+{% block title %}Organization Portal | National Network{% endblock %}
+{% block header_title %}Organization Hub{% endblock %}
+{% block header_desc %}Manage associated medical staff, patients, and organ procurement requests{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-5 text-center">
+    <div class="col-md-4">
+        <div class="glass-card p-4 border-start border-primary border-4">
+            <h6 class="text-muted small fw-bold text-uppercase">Donors Managed</h6>
+            <h1 class="fw-bold mb-0 text-primary">{{ donors }}</h1>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 border-start border-success border-4">
+            <h6 class="text-muted small fw-bold text-uppercase">Medical Staff</h6>
+            <h1 class="fw-bold mb-0 text-success">{{ doctors }}</h1>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 border-start border-info border-4">
+            <h6 class="text-muted small fw-bold text-uppercase">Total Network Patients</h6>
+            <h1 class="fw-bold mb-0 text-info">{{ patients }}</h1>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 h-100">
+            <h4 class="fw-bold mb-4"><i class="fa-solid fa-bolt-lightning text-warning me-2"></i> Registry Actions</h4>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <button class="action-card-btn w-100 p-4 border-0 text-start" data-bs-toggle="modal" data-bs-target="#userModal">
+                        <div class="action-icon bg-secondary-subtle text-secondary mb-3">
+                            <i class="fa-solid fa-id-card"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-1">Add User Profile</h5>
+                        <p class="text-muted small mb-0">Create base identity in national network</p>
+                    </button>
+                </div>
+
+                <div class="col-md-6">
+                    <button class="action-card-btn w-100 p-4 border-0 text-start" data-bs-toggle="modal" data-bs-target="#donorModal">
+                        <div class="action-icon bg-primary-subtle text-primary mb-3">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-1">Register Donor</h5>
+                        <p class="text-muted small mb-0">Add new donor to national registry</p>
+                    </button>
+                </div>
+
+                <div class="col-md-6">
+                    <button class="action-card-btn w-100 p-4 border-0 text-start" data-bs-toggle="modal" data-bs-target="#donationModal">
+                        <div class="action-icon bg-info-subtle text-info mb-3">
+                            <i class="fa-solid fa-hand-holding-medical"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-1">Log Donation</h5>
+                        <p class="text-muted small mb-0">Register available organs for matching</p>
+                    </button>
+                </div>
+
+                <div class="col-md-6">
+                    <button class="action-card-btn w-100 p-4 border-0 text-start" data-bs-toggle="modal" data-bs-target="#doctorModal">
+                        <div class="action-icon bg-success-subtle text-success mb-3">
+                            <i class="fa-solid fa-user-doctor"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-1">Affiliate Doctor</h5>
+                        <h6 class="text-muted small mb-0">Onboard medical practitioners</h6>
+                    </button>
+                </div>
+
+                <div class="col-md-6">
+                    <button class="action-card-btn w-100 p-4 border-0 text-start" data-bs-toggle="modal" data-bs-target="#patientModal">
+                        <div class="action-icon bg-danger-subtle text-danger mb-3">
+                            <i class="fa-solid fa-hospital-user"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-1">Register Patient</h5>
+                        <p class="text-muted small mb-0">Assign patients to waitlist</p>
+                    </button>
+                </div>
+
+                <div class="col-md-6">
+                    <button class="action-card-btn w-100 p-4 border-0 text-start" data-bs-toggle="modal" data-bs-target="#requestModal">
+                        <div class="action-icon bg-warning-subtle text-warning mb-3">
+                            <i class="fa-solid fa-code-pull-request"></i>
+                        </div>
+                        <h5 class="fw-bold text-white mb-1">Create Request</h5>
+                        <p class="text-muted small mb-0">Initialize organ procurement</p>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="glass-card p-4 h-100">
+            <h4 class="fw-bold mb-4">Registry Management</h4>
+            <div class="d-grid gap-3">
+                <a href="/requests" class="nav-extra-link p-3 text-decoration-none">
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="fa-solid fa-list-check text-primary"></i>
+                        <span class="text-white">Active Procurement Queue</span>
+                        <i class="fa-solid fa-arrow-right ms-auto small opacity-50"></i>
+                    </div>
+                </a>
+                <a href="/matches" class="nav-extra-link p-3 text-decoration-none">
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="fa-solid fa-vial-circle-check text-success"></i>
+                        <span class="text-white">Biological Matching Center</span>
+                        <i class="fa-solid fa-arrow-right ms-auto small opacity-50"></i>
+                    </div>
+                </a>
+                <hr class="border-secondary opacity-25">
+                <a href="/view_doctors" class="nav-extra-link p-3 text-decoration-none small">
+                    <i class="fa-solid fa-users-medical me-2 text-muted"></i> View Affiliated Staff
+                </a>
+                <a href="/view_patients" class="nav-extra-link p-3 text-decoration-none small">
+                    <i class="fa-solid fa-user-group me-2 text-muted"></i> Managed Patient List
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="userModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content glass-card p-3">
+            <div class="modal-header border-0 pb-0">
+                <h4 class="fw-bold mb-0">Create National User Profile</h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/add_user" method="POST" class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">FULL NAME</label>
+                        <input type="text" name="name" class="form-control bg-dark text-white border-secondary p-3 shadow-none" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-bold">DATE OF BIRTH</label>
+                        <input type="date" name="dob" class="form-control bg-dark text-white border-secondary p-3 shadow-none" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-bold">GENDER</label>
+                        <select name="gender" class="form-select bg-dark text-white border-secondary p-3 shadow-none">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-bold">BLOOD GROUP</label>
+                        <input type="text" name="blood_group" class="form-control bg-dark text-white border-secondary p-3 shadow-none" placeholder="A+" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-bold">INSURANCE (0/1)</label>
+                        <input type="number" name="insurance" class="form-control bg-dark text-white border-secondary p-3 shadow-none" min="0" max="1" value="1">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">CITY</label>
+                        <input type="text" name="city" class="form-control bg-dark text-white border-secondary p-3 shadow-none" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label text-muted small fw-bold">MEDICAL HISTORY / NOTES</label>
+                        <textarea name="history" class="form-control bg-dark text-white border-secondary p-3 shadow-none" rows="2"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-gov w-100 p-3" style="background-color: #64748b; color: white;">Generate Network Identity</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="donorModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card border-primary p-3">
+            <div class="modal-header border-0 pb-0">
+                <h4 class="fw-bold mb-0">Register New Donor</h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/add_donor" method="POST">
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold">USER IDENTIFIER (ID)</label>
+                        <input type="text" name="user_id" class="form-control bg-dark text-white border-secondary p-3 shadow-none" placeholder="e.g. 101" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold">MEDICAL REASON / NOTES</label>
+                        <textarea name="reason" class="form-control bg-dark text-white border-secondary p-3 shadow-none" rows="3" placeholder="Additional details..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-gov w-100 p-3">Register & Secure Record</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="donationModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card border-info p-3">
+            <div class="modal-header border-0 pb-0">
+                <h4 class="fw-bold mb-0">Log Available Donation</h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/add_donation" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">DONOR ID</label>
+                        <input type="number" name="donor_id" class="form-control bg-dark text-white border-secondary p-3 shadow-none" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold">SELECT ORGAN</label>
+                        <select name="organ_id" class="form-select bg-dark text-white border-secondary p-3 shadow-none" required>
+                            <option value="1">Kidney</option>
+                            <option value="2">Liver</option>
+                            <option value="3">Heart</option>
+                            <option value="4">Lung</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-gov w-100 p-3" style="background-color: #0891b2; color: white;">Mark as PENDING for Match</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="doctorModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card border-success p-3">
+            <div class="modal-header border-0 pb-0">
+                <h4 class="fw-bold mb-0">Affiliate Medical Practitioner</h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/add_doctor" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">DOCTOR FULL NAME</label>
+                        <input type="text" name="doctor_name" class="form-control bg-dark text-white border-secondary p-3 shadow-none" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold">MEDICAL SPECIALIZATION</label>
+                        <input type="text" name="specialization" class="form-control bg-dark text-white border-secondary p-3 shadow-none" required>
+                    </div>
+                    <button type="submit" class="btn btn-gov w-100 p-3" style="background-color: #22c55e;">Confirm Affiliation</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="patientModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card border-danger p-3">
+            <div class="modal-header border-0 pb-0">
+                <h4 class="fw-bold mb-0">Add Patient to Network</h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/add_patient" method="POST" class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">USER ID</label>
+                        <input type="text" name="user_id" class="form-control bg-dark text-white border-secondary p-3" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">DOCTOR ID</label>
+                        <input type="text" name="doctor_id" class="form-control bg-dark text-white border-secondary p-3" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label text-muted small fw-bold">REASON FOR PROCUREMENT</label>
+                        <input type="text" name="procure_reason" class="form-control bg-dark text-white border-secondary p-3" required>
+                    </div>
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-gov w-100 p-3" style="background-color: #ef4444;">Onboard Patient</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="requestModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card border-warning p-3">
+            <div class="modal-header border-0 pb-0">
+                <h4 class="fw-bold mb-0">Initialize Organ Request</h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/create_request" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">PATIENT ID</label>
+                        <input type="text" name="patient_id" class="form-control bg-dark text-white border-secondary p-3 shadow-none" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">ORGAN ID</label>
+                        <input type="text" name="organ_id" class="form-control bg-dark text-white border-secondary p-3 shadow-none" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold">URGENCY PROTOCOL</label>
+                        <select name="urgency" class="form-select bg-dark text-white border-secondary p-3 shadow-none">
+                            <option value="Low">Low Priority</option>
+                            <option value="Medium">Medium Priority</option>
+                            <option value="High">Emergency / High Priority</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-gov w-100 p-3" style="background-color: #eab308; color: #000;">Dispatch Request</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .action-card-btn {
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        border-radius: 16px;
+        transition: all 0.2s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .action-card-btn:hover {
+        background: rgba(37, 99, 235, 0.02);
+        border-color: var(--accent-blue) !important;
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+    }
+    .nav-extra-link {
+        border-radius: 12px;
+        transition: 0.2s;
+        border: 1px solid transparent;
+        color: var(--text-main) !important;
+    }
+    .nav-extra-link:hover {
+        background: rgba(0, 0, 0, 0.02);
+        border-color: rgba(0, 0, 0, 0.05);
+    }
+    .action-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+    }
+    .bg-primary-subtle { background: rgba(37, 99, 235, 0.1) !important; }
+    .bg-success-subtle { background: rgba(34, 197, 94, 0.1) !important; }
+    .bg-danger-subtle { background: rgba(239, 68, 68, 0.1) !important; }
+    .bg-warning-subtle { background: rgba(234, 179, 8, 0.1) !important; }
+    .bg-secondary-subtle { background: rgba(100, 116, 139, 0.1) !important; }
+    .bg-info-subtle { background: rgba(8, 145, 178, 0.1) !important; }
+    .text-secondary { color: #64748b !important; }
+    .text-info { color: #0891b2 !important; }
+    
+    .modal-content {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        background: #ffffff;
+    }
+    .form-control, .form-select {
+        background-color: #f8fafc !important;
+        border-color: #e2e8f0 !important;
+        color: var(--text-main) !important;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: var(--accent-blue) !important;
+        background-color: #ffffff !important;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1) !important;
+    }
+    .action-card-btn h5 { color: var(--text-main) !important; }
+    .nav-extra-link span { color: var(--text-main) !important; }
+</style>
+{% endblock %}

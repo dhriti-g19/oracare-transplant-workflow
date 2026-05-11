@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Medical Practitioner Portal | National Registry{% endblock %}
+{% block header_title %}Clinical Oversight Hub{% endblock %}
+{% block header_desc %}Evaluation and approval of patients for transplantation eligibility{% endblock %}
+
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category if category != 'success' else 'info' }} glass-card border-0 mb-4 shadow-sm" role="alert">
+        <div class="d-flex align-items-center gap-3">
+            <i class="fa-solid fa-circle-info text-info fs-4"></i>
+            <div>{{ message }}</div>
+            <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="row g-4 mb-5">
+    <div class="col-md-6">
+        <div class="glass-card p-4 border-start border-primary border-4">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted small fw-bold text-uppercase">Assigned Patients</span>
+                <div class="action-icon bg-primary-subtle text-primary">
+                    <i class="fa-solid fa-user-doctor"></i>
+                </div>
+            </div>
+            <h1 class="fw-bold mb-0 text-primary">{{ patients|length }}</h1>
+            <p class="text-muted small mt-2 mb-0">Active Clinical Evaluations</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="glass-card p-4 border-start border-warning border-4">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="text-muted small fw-bold text-uppercase">Priority Evaluations</span>
+                <div class="action-icon bg-warning-subtle text-warning">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+            </div>
+            <h1 class="fw-bold mb-0 text-warning">{{ pending_count }}</h1>
+            <p class="text-muted small mt-2 mb-0">Awaiting Transplant Approval</p>
+        </div>
+    </div>
+</div>
+
+<div class="glass-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Clinical Approval Queue</h4>
+        <div class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2">
+            Physician ID: {{ session.get('doctor_id') }}
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table registry-table align-middle">
+            <thead>
+                <tr class="text-muted small fw-bold text-uppercase">
+                    <th class="ps-4">Identifier</th>
+                    <th>Patient Identification</th>
+                    <th>Clinical Indication</th>
+                    <th class="text-center">Protocol Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in patients %}
+                <tr>
+                    <td class="ps-4">
+                        <span class="badge border border-secondary text-secondary fw-bold px-3 py-2 bg-white rounded">
+                            {{ p[0] }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="fw-bold text-dark">{{ p[1] }}</div>
+                        <div class="text-muted smaller">Verified Network Patient</div>
+                    </td>
+                    <td>
+                        <div class="text-muted text-wrap" style="max-width: 350px;">
+                            {{ p[2] }}
+                        </div>
+                    </td>
+                    <td class="text-center pe-4">
+                        {% if p[3] == 'APPROVED' %}
+                            <div class="d-flex align-items-center justify-content-center gap-2 text-success fw-bold">
+                                <i class="fa-solid fa-circle-check"></i>
+                                ELIGIBLE
+                            </div>
+                        {% else %}
+                            <form method="POST" action="/approve_patient">
+                                <input type="hidden" name="patient_id" value="{{ p[0] }}">
+                                <button type="submit" class="btn btn-gov btn-sm px-4">
+                                    Approve for Surgery
+                                </button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if not patients %}
+    <div class="text-center py-5 opacity-50">
+        <i class="fa-solid fa-inbox fs-1 mb-3"></i>
+        <h5>Queue Clear</h5>
+        <p>No patients currently assigned for clinical oversight.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .text-accent-blue { color: var(--accent-blue); }
+    .bg-primary-subtle { background: rgba(37, 99, 235, 0.1) !important; }
+    .bg-warning-subtle { background: rgba(234, 179, 8, 0.1) !important; }
+    .smaller { font-size: 0.75rem; }
+    
+    /* Specific table adjustment for this page */
+    .registry-table tr:hover {
+        background: rgba(0, 0, 0, 0.02);
+    }
+    .alert-info.glass-card {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe !important;
+        color: #1e40af;
+    }
+</style>
+{% endblock %}

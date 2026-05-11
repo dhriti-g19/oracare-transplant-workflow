@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} | Organization Directory{% endblock %}
+{% block header_title %}{{ title }}{% endblock %}
+{% block header_desc %}Comprehensive registry of clinical personnel and managed patient profiles for this facility{% endblock %}
+
+{% block content %}
+<div class="glass-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">Facility Directory</h4>
+        <a href="/organization" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Back to Hub</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table registry-table align-middle">
+            <thead>
+                <tr class="text-muted small fw-bold text-uppercase">
+                    <th class="ps-4" style="width: 15%;">Registry ID</th>
+                    <th>Legal Name / Identification</th>
+                    <th>Designation / Clinical Notes</th>
+                    <th class="text-center">Lifecycle Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr>
+                    <td class="ps-4">
+                        <code class="technical-id">{{ row[0] }}</code>
+                    </td>
+                    <td>
+                        <div class="fw-bold text-dark">{{ row[1] }}</div>
+                        <div class="text-muted smaller">Verified Record</div>
+                    </td>
+                    <td>
+                        <div class="text-muted">
+                            {{ row[2] }}
+                        </div>
+                    </td>
+                    <td class="text-center pe-4">
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-2">
+                            <i class="fa-solid fa-circle-check me-1"></i> ACTIVE
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if not data %}
+    <div class="text-center py-5 opacity-50">
+        <i class="fa-solid fa-users-slash fs-1 mb-3 text-muted"></i>
+        <h5>Directory Clear</h5>
+        <p>No active records found for this registry category.</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .text-accent-blue { color: var(--accent-blue); }
+    .bg-primary-subtle { background: rgba(37, 99, 235, 0.1) !important; }
+    .smaller { font-size: 0.85rem; }
+    .registry-table tr:hover { background: rgba(0, 0, 0, 0.02); }
+</style>
+{% endblock %}
